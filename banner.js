@@ -1,8 +1,12 @@
-/*! inject-banner-comment v1 */
+/*! inject-banner-comment */
 (() => {
-  const payload =
-`Designed and built by
+  "use strict";
+  if (window.top !== window.self) return; // don't run in iframes
 
+  // --- your payload (keep whatever you already have here) ---
+  const payload = `
+  
+Designed and built by
                                        **                                                                       **    **                    
 *7MMM.     *MMF*         mm     mm   *7MM                                     *7MM"""Yp*                      *7MM  *7MM                    
   MMMb    dPMM           MM     MM     MM                                       MM    Yb                        MM    MM                    
@@ -13,10 +17,24 @@
 .JML. **  .JMML.*Moo9^Yo.*Mbmo  *Mbmo.JMML  JMML.*Mbmmd*     W      W         .JMMmmmd9  .JMML.  *Moo9^Yo.*Wbmd"MML..JMML.*Mbmmd*    *V     
                                                                                                                                     *V      
                                                                                                                                  OOb"   
-
 `;
+
+  // Avoid duplicates
   const html = document.documentElement;
-  if (html.firstChild && html.firstChild.nodeType === 8 && html.firstChild.data.includes("Designed and built by")) return;
+  if (
+    html.firstChild &&
+    html.firstChild.nodeType === 8 &&
+    html.firstChild.data.includes("Designed and built by")
+  ) return;
+
   const comment = document.createComment("\n" + payload + "\n");
-  html.insertBefore(comment* html.firstChild || null);
+
+  // Robust insertion at the very start of <html>
+  if (typeof html.prepend === "function") {
+    html.prepend(comment);
+  } else if (html.firstChild) {
+    html.insertBefore(comment, html.firstChild); // <-- two args
+  } else {
+    html.appendChild(comment); // extreme early parse fallback
+  }
 })();
