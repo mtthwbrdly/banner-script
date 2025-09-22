@@ -3,7 +3,6 @@
   "use strict";
   if (window.top !== window.self) return; // don't run in iframes
 
-  // --- your payload (keep whatever you already have here) ---
   const payload = `
   
 Designed and built by
@@ -19,8 +18,10 @@ Designed and built by
                                                                                                                                  OOb"   
 `;
 
-  // Avoid duplicates
   const html = document.documentElement;
+  if (!html) return;
+
+  // Avoid duplicates
   if (
     html.firstChild &&
     html.firstChild.nodeType === 8 &&
@@ -29,12 +30,12 @@ Designed and built by
 
   const comment = document.createComment("\n" + payload + "\n");
 
-  // Robust insertion at the very start of <html>
+  // Put comment as the first child of <html>, with safe fallbacks
   if (typeof html.prepend === "function") {
     html.prepend(comment);
   } else if (html.firstChild) {
-    html.insertBefore(comment, html.firstChild); // <-- two args
+    html.insertBefore(comment, html.firstChild); // <-- 2 args
   } else {
-    html.appendChild(comment); // extreme early parse fallback
+    html.appendChild(comment); // earliest-parse fallback
   }
 })();
